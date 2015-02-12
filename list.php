@@ -1,21 +1,18 @@
 <?php
 
-if(isset($_GET['channel'])) {$channel_id = $_GET['channel'];}
+if(isset($_GET['channel'])) {
+	$channel_id = $_GET['channel'];
+	}
 else {
-
 
 	echo 'no channel specified. select one below:<br/>';
 
 	$html_mode = true;
 
-
-
-
-
 }
 	$html_mode = false;
 
-require_once('../headers/db_header.php');
+require_once('CONFIG_DB.php');
 
 $query = "SELECT * FROM podcast_episodes WHERE channel_id = ".$channel_id;
 

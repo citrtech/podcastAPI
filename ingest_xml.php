@@ -38,12 +38,13 @@
 
 <?php
 
-require_once('../headers/db_header.php');
+require_once('CONFIG-DB.php');
+require_once('CONFIG.php');
 
-    $dir = './xml/';
+    $dir = $podcast_xml_import_dir;
     $extension = 'xml';
     $dir_contents = scandir($dir);
-    $maximum_results = 5;
+    $maximum_results = 5000;
 
     foreach ($dir_contents as $key => $filename) {
 
@@ -59,7 +60,7 @@ require_once('../headers/db_header.php');
 
                 $xml_string = file_get_contents($dir . $filename);
                 xml_parse_into_struct($p, $xml_string, $values, $index);
-
+/*
                 echo '<h3>'.$filename.'</h3>';
                 echo '<hr> xml parse result:<br/> ';
 
@@ -73,12 +74,12 @@ require_once('../headers/db_header.php');
                echo '</pre></div>';
 
 
+*/
 
-//                echo '<h2>channel data:</h2>';
                 $channel_info = array();
 
                 $target_index = $index['TITLE'][0];
-                echo $values[$target_index]['value'];
+//                echo $values[$target_index]['value'];
 
                 $channel_info['title'] = $values[$index['TITLE'][0]]['value'];
                 $channel_info['subtitle'] = isset($index['ITUNES:SUBTITLE'][0])&&isset($values[$index['ITUNES:SUBTITLE'][0]]['value']) ? $values[$index['ITUNES:SUBTITLE'][0]]['value'] : '';
@@ -122,17 +123,18 @@ require_once('../headers/db_header.php');
                 } else {
                     echo '<h2>could not insert this show into the db. query:'.$channel_q.'</h2>';
                 }
+				/*
                 echo '<pre>';
                 print_r($channel_info);
                 echo '</pre>';
-
+*/
 
 
 //IMAGE
                 if(isset($index['ITUNES:IMAGE'])) {
-                    echo '<h3>channel image:</h3>';
+//                    echo '<h3>channel image:</h3>';
                     $target_index = $index['ITUNES:IMAGE'][0];
-                    echo '<img src="' . $values[$target_index]['attributes']['HREF'] . '"/>';
+//                    echo '<img src="' . $values[$target_index]['attributes']['HREF'] . '"/>';
                 }
 
 
@@ -227,8 +229,9 @@ function ingest_episodes($episodes,$channel_id, $db){
             htmlentities(addslashes($episode['ITUNES:SUMMARY']))."','".
             htmlentities(addslashes($episode['PUBDATE']))."','".
             htmlentities(addslashes($channel_id))."','".
-            htmlentities(addslashes($episode['URL']))."','".
-            htmlentities(addslashes($episode['duration']))."','".
+            htmlentities(addslashes($episode['URL']))."',".
+//            htmlentities(addslashes($episode['duration']))."','".
+			"0,'".
             $episode['LENGTH']."');";
 
         if ($result = mysqli_query($db,$episode_insert)){

@@ -10,13 +10,8 @@ $timezone = 'America/Vancouver';
 
 $audio_dir = 'podcast-media/audio/';//'\\\\PODCAST\\Audio\\audio\\new\\';
 
-
-
-//*******************************************
-//* 6) Podcasting settings
-//*******************************************
-
-$podcast_xml_dir = './podcasting/podcast-rss/';
+$podcast_xml_dir = 'podcasting-media/xml/'; // destination - final location for our podcast files
+$podcast_xml_import_dir = 'burli-xml/'; // one-time use to import xml from burli into db
 
 // the citr podcaster makes a request to the URL specified here.  The
 // file at this location should reside on a server with storage space 

@@ -1,8 +1,7 @@
 
 <?php
 
-require_once('../headers/db_header.php');
-
+require_once('CONFIG-DB.php');
 
 $q = 'SELECT id,name from shows';
 
