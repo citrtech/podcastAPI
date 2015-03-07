@@ -1,4 +1,5 @@
-<hmtl>
+
+	<html>
 
 	<head>
 
@@ -12,6 +13,7 @@
 				background-color:lightblue;
 			}
 		</style>
+	</head>
 		<body>
 
 
@@ -26,25 +28,27 @@
 <div id="podcast">
 <pre>
     START
-    DATE: <input type="datetime" id="start_date"></input> TIME: h:<input type="datetime" id="start_time_h" maxlength="2" size="2"></input> m:<input type="datetime" id="start_time_m" maxlength="2" size="2"></input> s:<input type="datetime" id="start_time_s" maxlength="2" size="2"></input><span class='custom_button' id="prev_start">preview</span>
+    DATE: <input type="datetime" id="start_date"> TIME: h:<input type="datetime" id="start_time_h" maxlength="2" size="2"> m:<input type="datetime" id="start_time_m" maxlength="2" size="2"> s:<input type="datetime" id="start_time_s" maxlength="2" size="2">
 
     END
-    DATE: <input type="datetime" id="end_date"></input> TIME h: <input type="datetime" id="end_time_h" maxlength="2" size="2"></input> m:<input type="datetime" id="end_time_m" maxlength="2" size="2"></input> s:<input type="datetime" id="end_time_s" maxlength="2" size="2"></input><span class='custom_button' id="prev_end">preview</span>
+    DATE: <input type="datetime" id="end_date"> TIME h: <input type="datetime" id="end_time_h" maxlength="2" size="2"> m:<input type="datetime" id="end_time_m" maxlength="2" size="2"> s:<input type="datetime" id="end_time_s" maxlength="2" size="2">
 
-    <input id="showname" value="show name"></input><br/>
+    <input id="showname" value="show name"><br/>
 
     <button class='custom_button' id="go_podcast">create podcast file</button>
 
+    <button class='custom_button' id="go_podcast_ftp">create podcast file (ftp)</button>
+
 <!--
     CHANNEL ID:
-	<input id='channel_id' maxlength='3' size='3'></input>"
+	<input id='channel_id' maxlength='3' size='3'>"
 
 
-    EPISODE TITLE: <input id='title' maxlength='255' size='80'></input>
-    EPISODE SUBTITLE: <input id='subtitle' maxlength='255' size='80'></input>
+    EPISODE TITLE: <input id='title' maxlength='255' size='80'>
+    EPISODE SUBTITLE: <input id='subtitle' maxlength='255' size='80'>
     EPISODE SUMMARY:
     <textarea id='summary' maxlength='4000' rows='20' cols='80'></textarea>
-    EPISODE URL: <input id='url' maxlength='255' size='75'></input>
+    EPISODE URL: <input id='url' maxlength='255' size='75'>
 
     <span class='custom_button' id="go_podcast_episode">add episode</span>
 </pre>
@@ -53,6 +57,7 @@
     <div id="output"></div>
 
 
+</pre>
 </div>
 
 
@@ -61,7 +66,8 @@
 <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js"></script>
 <script>
 
-	var podcaster_url = './create_audio_file_ftp.php';
+	var podcaster_url = './create_audio_file_old.php';
+	var podcaster_url_ftp = './create_audio_file.php';
 	var podcast_audio_root = '';
 	var episode_endpoint = '';//'/episode.php';
 	var archive_tool_url = '';//'http://archive.citr.ca';
@@ -141,7 +147,7 @@
 		return end_date + 60*60*end_hour + 60*end_minute + end_second;
 	}
 
-	$('#go_podcast').click(function(){
+	var do_podcast = function(podcast_url){
 
 		var show_name = $('#showname').val();
 
@@ -152,7 +158,7 @@
 		$('#output').append('<br/>requested duration: '+ Math.floor((end_unix-start_unix)/60/60)).append(' hours');
 		$('#output').append('<hr/>making audio...please wait...');
 
-		$.ajax(podcaster_url,{
+		$.ajax(podcast_url,{
 
 			data:{start:start_unix, end:end_unix, show:show_name},
 			success:function(data){
@@ -162,7 +168,7 @@
 				} else {
 
 					$('#output').append('<p>audio created successfully. audio should show up here soon:<hr/>'+
-					'<a href="http://playlist.citr.ca/podcasting/audio/'+data.filename+'">'+data.filename+'</a>');
+					'<a href="http://playlist.citr.ca/podcasting/audio/2015/'+data.filename+'">'+data.filename+'</a>');
 					//    $('#output').append('<hr/>did ajax request to '+podcaster_url+'. <hr/>result: '+data);
 
 					console.log(data);
@@ -177,42 +183,6 @@
 
 					var episode_url = podcast_audio_root+data.filename;
 
-					/*
-					 $.ajax('podcasting/episode.php', {
-
-					 type:'POST',
-					 data:{  url:episode_url,
-					 channel:channel,
-					 data: {title:title,
-					 subtitle:subtitle,
-					 summary:summary
-					 }
-					 },
-					 success:function(ep_data){
-					 $('#output').append('<hr/>episode added successfully. now writing xml file...');
-					 $.ajax('podcasting/writexml.php', {
-					 type:'GET',
-					 data:{
-					 channel:channel
-					 },
-					 success:function(xml_data){
-					 $('#output').append('<hr/>xml created successfully. podcast creation complete!');
-
-					 },
-					 error:function(xml_data){
-					 $('#output').append('<p>error creating xml - '+xml_data);
-
-					 }
-					 });
-
-					 },
-
-					 error:function(ep_data){
-					 $('#output').append('<p>failed adding episode data to db - '+ep_data);
-					 }
-
-					 });
-					 */
 				}
 			},
 			error:function(data){
@@ -227,10 +197,17 @@
 
 		});
 
+	}
+
+
+	$('#go_podcast_ftp').click(function() {
+		do_podcast(podcaster_url_ftp);
+	});
+	$('#go_podcast').click(function() {
+		do_podcast(podcaster_url);
 	});
 </script>
 
 
 		</body>
-	</head>
-</hmtl>
+</html>
