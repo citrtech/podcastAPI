@@ -9,7 +9,6 @@ $archive_access_url = $archive_tool_url.
 // new version (using ftp to put podcast audio 
 $ftp_url = '192.168.25.79';
 $ftp_user = 'user';  $ftp_pass = 'pass';
-//$ftp_user = 'root';  $ftp_pass = 'nas101.9';
 $ftp_path = '/path/to/audio/';
 
 
