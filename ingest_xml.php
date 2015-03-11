@@ -1,67 +1,37 @@
 <head>
-    <style type="text/css">
-        body{
-            width:1100px;
-        }
 
-        #blue{
-            background-color:paleturquoise;
-            margin-left:30px;
-            margin-right:10px;
-            padding:10px;
-            margin-bottom:20px;
-            width:40%;
-            overflow:scroll;
-            display: inline-block;
-            height:750px;
-        }
-
-        #red{
-            background-color:lightcoral;
-            margin-left:30px;
-            margin-bottom:20px;
-            width:40%;
-            overflow:scroll;
-
-            height:750px;
-            float:right;
-            display:inline;
-        }
-
-        #section{
-            border-width: 2;
-            border-style:solid;
-            width:98%;
-        }
-    </style>
 </head>
 
 <?php
 
-require_once('CONFIG-DB.php');
 require_once('CONFIG.php');
 
-    $dir = $podcast_xml_import_dir;
     $extension = 'xml';
-    $dir_contents = scandir($dir);
-    $maximum_results = 5000;
+    $maximum_results = 100000000;
 
-    foreach ($dir_contents as $key => $filename) {
+error_reporting(E_ALL & ~ E_NOTICE);
+
+  $directory_html = file_get_contents('http://playlist.citr.ca/podcasting/xml/');
+
+  preg_match_all('/podcasting\/xml\/[a-zA-Z0-9_-]*.xml/', $directory_html, $xml_urls);
+
+  $xml_urls = $xml_urls[0];
+
+    foreach ($xml_urls as $key => $xml_url) {
+
+      $xml_url = 'http://playlist.citr.ca/'.$xml_url;
 
         if ($key <= $maximum_results){
 
-        // IF ITS A XML FILE, process it
-        if (is_file($dir . $filename) && substr($filename, 0, 1) != '.') {
-
 //            echo '<div id=section>';
-            if (file_extension($filename) == $extension) {
+            if (file_extension($xml_url) == $extension) {
 
                 $p = xml_parser_create();
 
-                $xml_string = file_get_contents($dir . $filename);
+              $xml_string = file_get_contents($xml_url);
                 xml_parse_into_struct($p, $xml_string, $values, $index);
 /*
-                echo '<h3>'.$filename.'</h3>';
+                echo '<h3>'.$xml_url.'</h3>';
                 echo '<hr> xml parse result:<br/> ';
 
                echo '<div id=blue><pre>';
@@ -95,7 +65,7 @@ require_once('CONFIG.php');
                 $channel_info['default_episode_author'] = '';
                 $channel_info['link'] = $values[$index['LINK'][0]]['value'];
                 $channel_info['image'] = isset($index['ITUNES:LINK'][0])? $values[$index['ITUNES:LINK'][0]]['attributes']['HREF'] : '';
-                $channel_info['xml'] = $filename;
+                $channel_info['xml'] = $xml_url;
 
                 $channel_q = "INSERT into podcast_channels (title, subtitle, summary, author, keywords, owner_name, owner_email, episode_default_title, episode_default_subtitle, episode_default_author, link, image_url, xml) ";
                 $channel_q .= "VALUES ('".htmlentities(addslashes($channel_info['title']))."','".
@@ -114,6 +84,9 @@ require_once('CONFIG.php');
 
 //                $channel_q = mysqli_escape_string($db,$channel_q);
                 $channel_id = -1;
+
+
+
                 if ($result = mysqli_query($db,$channel_q)){
                     $channel_id = mysqli_insert_id($db);
                     echo '<h2>channel inserted! (id is '.$channel_id.')</h2>';
@@ -205,17 +178,21 @@ require_once('CONFIG.php');
                 echo 'episodes:<br/><pre>';
                 print_r($episodes);
                 echo '</pre>';*/
+
+
             }
 
-        } else {
-            echo '<p>' . $filename . ' is not a file';
-        }
+
             echo '</div>';
     }
     }
 
-function file_extension($filename){
-    $array = explode('.',$filename);
+
+
+
+
+function file_extension($xml_url){
+    $array = explode('.',$xml_url);
     return $array[count($array)-1];
 }
 
